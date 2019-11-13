@@ -11,7 +11,7 @@ response = ec2.describe_vpcs()
 vpc_id = response.get('Vpcs', [{}])[0].get('VpcId', '')
 
 try:
-    response = ec2.create_security_group(GroupName='SECURITY_GROUP_NAME',
+    response = ec2.create_security_group(GroupName='SECURITY_GROUP_EC2',
                                          Description='DESCRIPTION',
                                          VpcId=vpc_id)
     security_group_id = response['GroupId']
@@ -35,7 +35,7 @@ except ClientError as e:
 
 # keypair creation
 
-response = ec2.create_key_pair(KeyName='KEY_PAIR_NAME')
+response = ec2.create_key_pair(KeyName='SSH_KEY_PAIR')
 print(response)
 
 # ec2 instance creation
@@ -65,14 +65,13 @@ def create_ec2_instance(image_id, instance_type, keypair_name):
         return None
     return response['Instances'][0]
 
-
 def main():
     """Exercise create_ec2_instance()"""
 
     # Assign these values before running the program
-    image_id = 'AMI_IMAGE_ID'
-    instance_type = 'INSTANCE_TYPE'
-    keypair_name = 'KEYPAIR_NAME'
+    image_id = 'ami-028188d9b49b32a80'
+    instance_type = 't2.micro'
+    keypair_name = 'SSH_KEY_PAIR'
 
 
     # Set up logging
@@ -86,7 +85,6 @@ def main():
         logging.info(f'    VPC ID: {instance_info["VpcId"]}')
         logging.info(f'    Private IP Address: {instance_info["PrivateIpAddress"]}')
         logging.info(f'    Current State: {instance_info["State"]["Name"]}')
-
 
 if __name__ == '__main__':
     main()
