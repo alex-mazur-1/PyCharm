@@ -4,15 +4,6 @@ from boto.ec2 import connect_to_region
 
 ec2_conn = connect_to_region("sp-southeast-1")
 
-# create security group allowing SSH
-demo_sg = ec2_conn.create_security_group("demo-sg", "Demo Sec Group")
-demo_sg.authorize("tcp", 22, 22, "0.0.0.0/0")
-demo_sg.authorize("tcp", 80, 80, "0.0.0.0/0")
-
-#create and save a public key for SSH login
-
-demo_key = ec2_conn.create_key_pair("demo-key")
-demo_key.save(".")
 
 # Base64 and save a public key for SSH login.
 with open('init.sh') as f:

@@ -33,26 +33,19 @@ try:
 except ClientError as e:
     print(e)
 
-# keypair creation
+# keypair creation  +save
 
 response = ec2.create_key_pair(KeyName='SSH_KEY_PAIR')
+#response.save(".")
 print(response)
 
 # ec2 instance creation
 
 def create_ec2_instance(image_id, instance_type, keypair_name):
-    """Provision and launch an EC2 instance
 
-    The method returns without waiting for the instance to reach
-    a running state.
-
-    :param image_id: ID of AMI to launch, such as 'ami-XXXX'
-    :param instance_type: string, such as 't2.micro'
-    :param keypair_name: string, name of the key pair
-    :return Dictionary containing information about the instance. If error,
-    returns None.
-    """
     # Provision and launch the EC2 instance
+    # The method returns without waiting for the instance to reach
+    # a running state. If error, returns None.
     ec2_client = boto3.client('ec2')
     try:
         response = ec2_client.run_instances(ImageId=image_id,
@@ -66,9 +59,9 @@ def create_ec2_instance(image_id, instance_type, keypair_name):
     return response['Instances'][0]
 
 def main():
-    """Exercise create_ec2_instance()"""
+    """create_ec2_instance()"""
 
-    # Assign these values before running the program
+    # Assign the values
     image_id = 'ami-028188d9b49b32a80'
     instance_type = 't2.micro'
     keypair_name = 'SSH_KEY_PAIR'
