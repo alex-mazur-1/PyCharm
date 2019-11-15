@@ -3,41 +3,13 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-
-# security group creation
-ec2 = boto3.client('ec2')
-
-response = ec2.describe_vpcs()
-vpc_id = response.get('Vpcs', [{}])[0].get('VpcId', '')
-
-try:
-    response = ec2.create_security_group(GroupName='SECURITY_GROUP_EC2',
-                                         Description='DESCRIPTION',
-                                         VpcId=vpc_id)
-    security_group_id = response['GroupId']
-    print('Security Group Created %s in vpc %s.' % (security_group_id, vpc_id))
-
-    data = ec2.authorize_security_group_ingress(
-        GroupId=security_group_id,
-        IpPermissions=[
-            {'IpProtocol': 'tcp',
-             'FromPort': 80,
-             'ToPort': 80,
-             'IpRanges': [{'CidrIp': '0.0.0.0/0'}]},
-            {'IpProtocol': 'tcp',
-             'FromPort': 22,
-             'ToPort': 22,
-             'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}
-        ])
-    print('Ingress Successfully Set %s' % data)
-except ClientError as e:
-    print(e)
-
 # keypair creation  +save
 
-response = ec2.create_key_pair(KeyName='SSH_KEY_PAIR')
-#response.save(".")
+ec2 = boto3.client('ec2')
+response = ec2.create_key_pair(KeyName='SSH_KEY2_PAIR')
 print(response)
+#response.save(".")
+
 
 # ec2 instance creation
 
@@ -46,20 +18,21 @@ def create_ec2_instance(image_id, instance_type, keypair_name):
     # Provision and launch the EC2 instance
     # The method returns without waiting for the instance to reach
     # a running state. If error, returns None.
-    ec2_client = boto3.client('ec2')
+    ec2 = boto3.client('ec2')
     try:
-        response = ec2_client.run_instances(ImageId=image_id,
-                                            InstanceType=instance_type,
-                                            KeyName=keypair_name,
-                                            MinCount=1,
-                                            MaxCount=1)
+        response = ec2.run_instances(ImageId=image_id,
+                                     InstanceType=instance_type,
+                                     KeyName=keypair_name,
+                                     #SecurityGroupIds=["security_group_id"],
+                                     MinCount=1,
+                                     MaxCount=1)
     except ClientError as e:
         logging.error(e)
         return None
     return response['Instances'][0]
 
+
 def main():
-    """create_ec2_instance()"""
 
     # Assign the values
     image_id = 'ami-028188d9b49b32a80'
@@ -71,11 +44,11 @@ def main():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(levelname)s: %(asctime)s: %(message)s')
 
-    # Provision and launch the EC2 instance
     instance_info = create_ec2_instance(image_id, instance_type, keypair_name)
     if instance_info is not None:
         logging.info(f'Launched EC2 Instance {instance_info["InstanceId"]}')
         logging.info(f'    VPC ID: {instance_info["VpcId"]}')
+       #logging.info(f'    GroupId: {instance_info["security_group_id"]}')
         logging.info(f'    Private IP Address: {instance_info["PrivateIpAddress"]}')
         logging.info(f'    Current State: {instance_info["State"]["Name"]}')
 

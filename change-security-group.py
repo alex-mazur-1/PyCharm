@@ -39,10 +39,9 @@ def main():
     """Exercise change_instance_security_groups()"""
 
     # Assign these values before running the program
-    ec2_instance_id = 'INSTANCE_ID'
+    ec2_instance_id = 'i-0409822b9dae33c7a'
     security_group_ids = [
-        'SECURITY_GROUP_ID_1',
-        'SECURITY_GROUP_ID_2',
+        'sg-0e9697b2a6899f513'
     ]
 
     # Set up logging

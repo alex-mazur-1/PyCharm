@@ -1,12 +1,15 @@
+#!/usr/bin/env python3
+
 import boto3
-import boto3.ec2
+#import boto3.ec2
 import sys
+
 
 client = boto3.client('ec2')
 # create an EBS volume, 1G size
-
-ebs_vol = client.create_volume(
-    AvailabilityZone='symphony',
+def create_volume():
+ ebs_vol = client.create_volume(
+    AvailabilityZone='eu-west-1',
     Size=1,
     VolumeType='standard',
     TagSpecifications=[
@@ -21,17 +24,20 @@ ebs_vol = client.create_volume(
         },
     ]
 )
-volume_id = ebs_vol['VolumeId']
+#volume_id = ebs_vol['VolumeId']
 
-#check that the EBS volume has been created successfully
-if ebs_vol['ResponseMetadata']['HTTPStatusCode'] == 200:
+ # "check that the EBS volume has been created successfully"
+
+   if ebs_vol['ResponseMetadata']['HTTPStatusCode'] == 200:
         print ("Successfully created Volume! ") + volume_id
 
- attaching EBS volume to our EC2 instance
+
+ # attaching EBS volume to our EC2 instance
+def main():
     attach_resp = client.attach_volume(
         VolumeId=volume_id,
-        InstanceId=ec2_instance['Instances'][0]['InstanceId'],
+        InstanceId=client['Instances'][0]['InstanceId'],
         Device='/dev/xvdf')
 
-if __name__ == '__main__':
-sys.exit(main(sys.argv[1:]))
+    if __name__ == '__main__':
+      sys.exit(main(sys.argv[1:]))
