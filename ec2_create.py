@@ -3,12 +3,11 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-# keypair creation  +save
+# EC2 Tag attachment
 
-ec2 = boto3.client('ec2')
-response = ec2.create_key_pair(KeyName='SSH_KEY2_PAIR')
-print(response)
-#response.save(".")
+#ec2 = boto3.client('ec2')
+#tag = ec2.Tag('resource_id', 'EC2', '123321')
+
 
 
 # ec2 instance creation
