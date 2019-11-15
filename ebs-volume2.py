@@ -4,7 +4,7 @@ import time
 ec2 = boto3.resource('ec2')
 
 #### Create a volume ####
-# create_volume(size, zone, snapshot=None, volume_type=None, iops=None)
+
 vol = ec2.create_volume(
    AvailabilityZone='eu-west-1c',
       Size=1,
@@ -23,18 +23,11 @@ vol = ec2.create_volume(
    )
 print ('Volume Id: ', vol.id)
 
-# Add a Name tag to the new volume so we can find it.
-ec2.create_tags([vol.id], "Name")
+# "check that the EBS volume has been created successfully"
 
-# We can check if the volume is now ready and available:
-curr_vol = ec2.get_all_volumes([vol.id])[0]
-while curr_vol.status == 'creating':
-      curr_vol = ec2.get_all_volumes([vol.id])[0]
-      print ('Current Volume Status: ', curr_vol.status)
-      time.sleep(2)
-print ('Current Volume Zone: ', curr_vol.zone)
-
+time.sleep(15)
 
 #### Attach a volume ####
-result = ec2.attach_volume (vol.id, instance.id, "/dev/sdf")
+ec2 = boto3.resource('ec2')
+result = vol.attach_to_instance(Device='/dev/xvdf', InstanceId = 'i-0409822b9dae33c7a')
 print ('Attach Volume Result: ', result)
